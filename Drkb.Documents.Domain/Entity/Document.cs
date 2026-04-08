@@ -1,4 +1,6 @@
-﻿namespace Drkb.Documents.Domain.Entity;
+﻿using Drkb.Documents.Domain.Enum;
+
+namespace Drkb.Documents.Domain.Entity;
 
 public class Document : BaseEntity
 {

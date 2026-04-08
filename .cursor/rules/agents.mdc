@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Architecture Guide For AI Agents (универсально для всех проектов)
 
 Этот документ описывает **единый архитектурный стиль**, используемый во всех проектах: слои, зависимости, CQRS через `MediatR`, `QueryObject`/`DataProvider`, `Result`, DI и фоновые задачи.
