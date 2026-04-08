@@ -1,0 +1,221 @@
+# Architecture Guide For AI Agents (универсально для всех проектов)
+
+Этот документ описывает **единый архитектурный стиль**, используемый во всех проектах: слои, зависимости, CQRS через `MediatR`, `QueryObject`/`DataProvider`, `Result`, DI и фоновые задачи.
+
+Цель: чтобы ИИ-агенты (и люди) вносили изменения в едином стиле, не смешивали слои и не протаскивали инфраструктурные зависимости в прикладной слой (`Application`).
+
+## Слои и зависимости
+
+Проект обычно разбит на 5 основных сборок (названия могут отличаться, но роли — одинаковые):
+
+1. `*.Presentation`
+   - ASP.NET Core Web API + контроллеры.
+   - Composition root: регистрация DI, middleware, Swagger, миграции.
+   - Единственное место, где есть ссылка на `Infrastructure`.
+
+2. `*.Application`
+   - Сценарии (use-cases): `MediatR` `Command/Query` + `Handler`.
+   - Контракты (интерфейсы) для доступа к данным и внешним сервисам: `IDataProvider`, `IQuery<...>`, `IObjectStorageService`, `IUploadContextService`, и т.д.
+   - Возвращаемые типы: `Result` / `Result<T>` (единая библиотека результатов).
+   - Не содержит EF Core, Redis, S3, Quartz, RabbitMQ и прочей инфраструктуры.
+
+3. `*.Infrastructure`
+   - Реализации интерфейсов из `Application`.
+   - EF Core `DbContext` и работа с БД.
+   - Реализации интеграций (например, Redis/S3/Message broker/HTTP клиенты).
+   - Реализации `QueryObject` и `DataProvider`.
+   - DI extension-методы: `AddQueryObjects`, `AddDataProviders`, `AddServices`, `AddQuartzService`, и т.д.
+
+4. `*.Domain`
+   - Доменные сущности (Entity-модели), используемые и в `Infrastructure` (EF), и в `Application` (handlers).
+   - Здесь не должно быть зависимостей на `Infrastructure` и web.
+
+5. `*.Contracts`
+   - Контрактный слой (DTO/контракты интеграций/общие типы), используемый между сборками/сервисами.
+
+Граф зависимостей (упрощенно):
+
+`Presentation` -> `Application`
+
+`Presentation` -> `Infrastructure` -> `Application`
+
+`Application` -> `Domain`, `Contracts`
+
+`Infrastructure` -> `Application` -> `Domain`, `Contracts`
+
+## Composition Root (как запускается приложение)
+
+Точка входа: `*.Presentation/Program.cs`.
+
+Там:
+- регистрируются все сервисы через extension-методы (`AddQueryObjects`, `AddDataProviders`, `AddServices`, `AddQuartzService` и пр.);
+- подключается MediatR и сканируется сборка `Application` (регистрация handlers/use-cases);
+- поднимается `DbContext` и прогоняются миграции при старте.
+
+Важно: любой новый сервис/queryobject/dataprovider должен быть добавлен в соответствующий DI extension в `Infrastructure/DI/*ServiceCollectionExtension.cs`, иначе приложение не стартанет (или handler получит `InvalidOperationException` при резолве зависимостей).
+
+## HTTP слой (`Presentation`): контроллеры + MediatR + Result
+
+Паттерн контроллеров:
+- Контроллер получает `IMediator`.
+- На каждый endpoint создается `Command`/`Query` объект (часто `record`) и отправляется через `_mediator.Send(...)`.
+- Контроллер интерпретирует `Result`:
+  - если `result.IsSuccess` -> `Ok(result.Data)` или `Ok()`
+  - иначе -> `StatusCode(result.StatusCode, result.ErrorMessage)`
+
+Правила:
+1. Контроллеры не ходят в EF/DbContext напрямую.
+2. Контроллеры не должны знать про конкретные реализации `Infrastructure`.
+3. Валидация уровня HTTP (например, `Guid.Empty`) допустима в контроллере, но бизнес-правила должны оставаться в handler’ах.
+
+## MediatR в проекте: команды и запросы
+
+В `Application` используется MediatR:
+- `Command`/`Query` реализуют `IRequest<Result>` или `IRequest<Result<T>>`.
+- `Handler` реализует `IRequestHandler<TRequest, Result>` или `IRequestHandler<TRequest, Result<T>>`.
+
+Структура каталогов:
+- `*.Application/UseCases/Command/...`
+- `*.Application/UseCases/Query/...`
+
+Конвенции:
+1. `Command` меняет состояние (БД/файлы/кэш).
+2. `Query` возвращает данные и не изменяет состояние.
+3. Любой handler:
+   - принимает зависимости через DI в конструктор;
+   - возвращает `Result`/`Result<T>`;
+   - ловит исключения и маппит их в `Result.ServerError()` (в проекте это типичный подход).
+
+## Result (единый объект результата)
+
+Все проекты используют единый пакет результатов (`Result` и `Result<T>`), чтобы стандартно маппить бизнес‑ошибки в HTTP.
+
+Как он используется:
+- успешный результат:
+  - `Result.Success()`
+  - `Result<T>.Success(data)`
+- ошибки:
+  - `Result.BadRequest("message")`
+  - `Result<T>.BadRequest("message")`
+  - `Result.ServerError()` / `Result<T>.ServerError()`
+
+Контроллеры ориентируются на:
+- `IsSuccess`
+- `Data`
+- `StatusCode`
+- `ErrorMessage`
+
+Практика:
+- Для ожидаемых ошибок (валидация, не найдено) возвращать `BadRequest(...)` (или другой статус, если он предусмотрен библиотекой/контрактом).
+- Для неожиданных исключений возвращать `ServerError()` и не прокидывать raw exception наружу.
+
+## DataProviders (инфраструктурный доступ к данным для команд)
+
+DataProvider: это интерфейс(ы) в `Application`, которые:
+- предоставляют минимально нужные операции для конкретного use-case;
+- скрывают EF Core и `DbContext` от слоя `Application`.
+
+Базовые контракты (в `Application/Interfaces/DataProvider`):
+- `IDataProvider`: `SaveChangesAsync(...)`
+- `IAddDataProvider<TEntity>`: `AddAsync(TEntity entity)`
+- `IUpdateDataProvider<TEntity>`: `Update(TEntity entity)`
+- `IDeleteDataProvider<TEntity>`: `Delete(TEntity entity)`
+
+Use-case провайдеры (типовая схема):
+- в `Application/UseCases/...` лежит интерфейс вида `I<UseCaseName>DataProvider`.
+- он наследует `IDataProvider` и нужные CRUD-интерфейсы, плюс добавляет специфичные методы чтения:
+  - `GetCurrentAttachedFilesAsync(...)`
+  - `GetAllByUploadContextIdAsync(...)`
+  - `GetByIdAsync(...)`
+  - и т.п.
+
+Реализации лежат в `Infrastructure/Data/DataProvider/**` и используют `*DbContext`:
+- добавляют/удаляют EF-сущности;
+- делают `SaveChangesAsync`;
+- выполняют нужные выборки EF (обычно `ToListAsync`, `FirstOrDefaultAsync`).
+
+DI-регистрация: `Infrastructure/DI/DataProviderServiceCollectionExtension.cs` (`services.AddTransient<...>()`).
+
+Правила для добавления нового DataProvider:
+1. В `Application` создать интерфейс `I<UseCaseName>DataProvider` рядом с use-case (чтобы было видно, что он принадлежит конкретному сценарию).
+2. В интерфейсе держать только то, что нужно этому handler’у, не делать “универсальный репозиторий”.
+3. В `Infrastructure` создать реализацию в подходящей папке `Data/DataProvider/<bounded-area>/...`.
+4. Обязательно добавить регистрацию в `AddDataProviders()`.
+
+## QueryObjects (инфраструктурный доступ к данным для запросов)
+
+QueryObject: это реализация интерфейса `IQuery<TQuery, TResult>` (из `Application/Interfaces/Query/IQuery.cs`):
+- вход: объект запроса (обычно MediatR query/command record)
+- выход: DTO/список DTO (без `Result` здесь)
+
+Контракты query objects живут в `Application/UseCases/Query/**` как интерфейсы:
+- `I<Something>Query : IQuery<TQuery, TResult>`
+
+Реализации в `Infrastructure/Data/QueryObject/**` (EF Core):
+- читают из `*DbContext`
+- почти всегда используют `AsNoTracking()`
+- маппят сущности в DTO
+
+DI-регистрация: `Infrastructure/DI/QueryObjectServiceCollectionExtension.cs` (`services.AddTransient<...>()`).
+
+Почему query objects отделены от handlers:
+- handler остается “оркестратором”: валидация, Result, вызов инфраструктуры;
+- чтение данных инкапсулировано и легко заменить/оптимизировать (например, добавить includes, projection, caching).
+
+## DI: где регистрировать зависимости
+
+В `Infrastructure/DI` лежат extension-методы:
+- `QueryObjectServiceCollectionExtension.AddQueryObjects()`
+- `DataProviderServiceCollectionExtension.AddDataProviders()`
+- `ServicesServiceCollectionExtension.AddServices()`
+- `QuartzServiceCollectionExtension.AddQuartzService()`
+- плюс прочие конфигурационные extension-методы (Redis, RabbitMQ, Options, DbContext, CORS, Swagger) вызываемые из `Program.cs`.
+
+Правила:
+1. Интерфейс в `Application` -> реализация в `Infrastructure` -> регистрация в соответствующем extension.
+2. В `Presentation` не добавлять регистрации “вручную” (кроме вызова extension-методов), чтобы сохранять единый стиль.
+
+## Где создавать новые сущности/файлы (шпаргалка)
+
+Если добавляете новый API endpoint:
+1. В `Application`:
+   - создать `Command`/`Query` (`record`), возвращающий `Result`/`Result<T>`;
+   - создать `Handler` (оркестрация: валидация, вызов query object/data provider/services, возврат `Result`).
+2. Если это чтение:
+   - добавить интерфейс query object (`I<Something>Query : IQuery<..., ...>`) рядом с use-case;
+   - реализовать query object в `Infrastructure/Data/QueryObject/...` и зарегистрировать в `AddQueryObjects`.
+3. Если это запись:
+   - добавить интерфейс data provider `I<Something>DataProvider` рядом с use-case;
+   - реализовать в `Infrastructure/Data/DataProvider/...` и зарегистрировать в `AddDataProviders`.
+4. В `Presentation`:
+   - добавить action в нужный контроллер;
+   - вызвать `_mediator.Send(...)`;
+   - маппить `Result` в `ActionResult`.
+
+Если добавляете новую интеграцию (S3/Redis/внешний HTTP):
+- интерфейс в `Application/Interfaces/...`
+- реализация в `Infrastructure/Services/...`
+- регистрация в `Infrastructure/DI/ServicesServiceCollectionExtension.cs` (или в отдельном extension, если так принято для конкретной подсистемы).
+
+## Частые ошибки (и что НЕ делать)
+
+1. Не добавлять `DbContext`/EF зависимости в `Application`.
+2. Не делать “универсальные репозитории” на весь проект: data providers должны быть под конкретный use-case.
+3. Не возвращать из query objects `Result<T>`: query object возвращает “сырой” результат, а handler оборачивает в `Result<T>`.
+4. Не забывать DI регистрацию для новых интерфейсов.
+
+## Пример маппинга на текущий репозиторий (DrkbWikiFileSaver)
+
+Ниже — **только примеры**, показывающие, как универсальные концепции “проецируются” на этот проект.
+
+- **Composition root**: `DrkbWikiFileSaver.Presentation/Program.cs` регистрирует `AddQueryObjects()`, `AddDataProviders()`, `AddServices()`, `AddQuartzService()` и MediatR.
+- **Query objects**:
+  - интерфейсы: `DrkbWikiFileSaver.Application/UseCases/Query/**/I*Query.cs`
+  - реализации: `DrkbWikiFileSaver.Infrastructure/Data/QueryObject/**`
+- **Data providers**:
+  - интерфейсы: `DrkbWikiFileSaver.Application/UseCases/**/I*DataProvider.cs`
+  - реализации: `DrkbWikiFileSaver.Infrastructure/Data/DataProvider/**`
+- **Внешние сервисы**:
+  - `IObjectStorageService` -> `S3ObjectStorageService`
+  - `IUploadContextService` -> `RedisUploadContextService`
+- **Result**: используется пакет `Drkb.ResultObjects`.
