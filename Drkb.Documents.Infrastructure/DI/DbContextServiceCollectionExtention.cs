@@ -11,10 +11,10 @@ public static class DbContextServiceCollectionExtention
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-        services.AddDbContext<DocumentsDbContext>(options =>
+        services.AddDbContext<DrkbDocumentsDbContext>(options =>
         {
             options.UseNpgsql(connectionString, 
-                x => x.MigrationsAssembly(typeof(DocumentsDbContext).Assembly.GetName().Name));
+                x => x.MigrationsAssembly(typeof(DrkbDocumentsDbContext).Assembly.GetName().Name));
         });
 
         return services;

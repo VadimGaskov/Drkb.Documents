@@ -1,6 +1,6 @@
 ﻿namespace Drkb.Documents.Domain.Enum;
 
-public enum Status
+public enum DocumentStatus
 {
     Published,
     Archived,

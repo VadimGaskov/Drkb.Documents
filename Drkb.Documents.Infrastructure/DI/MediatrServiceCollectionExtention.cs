@@ -1,5 +1,4 @@
 ﻿using Drkb.Documents.Application;
-using Drkb.Documents.Application.UseCase.Command;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Drkb.Documents.Infrastructure.DI;

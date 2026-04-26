@@ -16,4 +16,9 @@
       <ProjectReference Include="..\Drkb.Documents.Domain\Drkb.Documents.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="UseCase\Command\" />
+      <Folder Include="UseCase\Query\" />
+    </ItemGroup>
+
 </Project>
