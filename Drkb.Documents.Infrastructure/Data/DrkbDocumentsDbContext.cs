@@ -6,9 +6,9 @@ namespace Drkb.Documents.Infrastructure.Data;
 
 public class DrkbDocumentsDbContext : DbContext
 {
-    public DrkbDocumentsDbContext(DbContextOptions<DrkbDocumentsDbContext> options)
-        : base(options)
+    public DrkbDocumentsDbContext(DbContextOptions<DrkbDocumentsDbContext> options) : base(options)
     {
+        
     }
 
     public DbSet<Category> Categories { get; set; }
