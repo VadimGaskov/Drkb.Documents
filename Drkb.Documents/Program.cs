@@ -1,4 +1,8 @@
+using Drkb.Documents.Application.Interfaces.Audit;
 using Drkb.Documents.Application.Interfaces.Authorization;
+using Drkb.Documents.Domain.Entity;
+using Drkb.Documents.Domain.Enum;
+using Drkb.Documents.Infrastructure.Data.HistoryWriter;
 using Drkb.JwtConfiguration.DI;
 using Drkb.Documents.Infrastructure.DI;
 using Drkb.Documents.Infrastructure.LoggerConfiguration;
@@ -20,6 +24,7 @@ builder.Services.AddDataProviderServices();
 builder.Services.AddSwagger();
 
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IHistoryWriter<Document, DocumentHistoryChangeType>, DocumentHistoryWriter>();
 
 builder.Services.AddSerilogLogger();
 Log.Logger = SerilogConfiguration.GetSerilogConfiguration(builder.Configuration);

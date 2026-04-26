@@ -8,11 +8,12 @@ public class Document : BaseEntity
     public string? Description { get; set; }
     
     public Guid CategoryId { get; set; }
-    public Category Category { get; set; }
+    public Category? Category { get; set; }
     
     public DocumentStatus Status { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public List<DocumentTag> DocumentTags { get; set; }
+    public List<DocumentTag> DocumentTags { get; set; } = new List<DocumentTag>();
+    public List<DocumentAccessRule> AccessRules { get; set; } = new List<DocumentAccessRule>();
 }

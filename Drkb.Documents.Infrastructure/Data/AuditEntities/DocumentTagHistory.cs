@@ -11,4 +11,5 @@ public class DocumentTagHistory
 
     public Guid TagId { get; set; }
     public Tag Tag { get; set; }
+    public string TagTitle { get; set; }
 }

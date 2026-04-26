@@ -18,6 +18,7 @@ public class DrkbDocumentsDbContext : DbContext
     
     public DbSet<DocumentHistory> DocumentHistories { get; set; }
     public DbSet<DocumentTagHistory> DocumentTagHistories { get; set; }
+    public DbSet<DocumentAccessRule> DocumentAccessRules { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

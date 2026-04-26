@@ -1,3 +1,5 @@
+using Drkb.Documents.Application.Interfaces.Audit;
+using Drkb.Documents.Application.Interfaces.Audit.Document;
 using Drkb.Documents.Application.Interfaces.Authorization;
 using Drkb.Documents.Application.Interfaces.DataProvider;
 using Drkb.Documents.Domain.Enum;
@@ -11,15 +13,16 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
     private readonly ICreateDocumentDataProvider _dataProvider;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-
+    private readonly IHistoryWriter<Domain.Entity.Document, DocumentHistoryChangeType> _historyWriter;
     public CreateDocumentCommandHandler(
         ICreateDocumentDataProvider dataProvider,
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService, IHistoryWriter<Domain.Entity.Document, DocumentHistoryChangeType> historyWriter)
     {
         _dataProvider = dataProvider;
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
+        _historyWriter = historyWriter;
     }
 
     public async Task<Result> Handle(CreateDocumentCommand request, CancellationToken cancellationToken)
@@ -44,10 +47,16 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
             CreatedBy = _currentUserService.UserId,
             CreatedAt = DateTime.UtcNow,
             DeletedAt = null,
-            DocumentTags = new List<Domain.Entity.DocumentTag>()
         };
 
         await _dataProvider.AddAsync(document, cancellationToken);
+
+        await _historyWriter.CreateSnapshotAsync(
+            document,
+            DocumentHistoryChangeType.Created,
+            _currentUserService.UserId, 
+            cancellationToken);
+        
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

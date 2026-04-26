@@ -1,3 +1,4 @@
+using Drkb.Documents.Application.Interfaces.Audit;
 using Drkb.Documents.Application.Interfaces.DataProvider;
 using Drkb.Documents.Domain.Enum;
 using DrkbTaskManager.Domain.ResultObject;
@@ -9,11 +10,12 @@ public class UpdateDocumentCommandHandler : IRequestHandler<UpdateDocumentComman
 {
     private readonly IUpdateDocumentDataProvider _dataProvider;
     private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateDocumentCommandHandler(IUpdateDocumentDataProvider dataProvider, IUnitOfWork unitOfWork)
+    private readonly IHistoryWriter<Domain.Entity.Document, DocumentHistoryChangeType> _historyWriter;
+    public UpdateDocumentCommandHandler(IUpdateDocumentDataProvider dataProvider, IUnitOfWork unitOfWork, IHistoryWriter<Domain.Entity.Document, DocumentHistoryChangeType> historyWriter)
     {
         _dataProvider = dataProvider;
         _unitOfWork = unitOfWork;
+        _historyWriter = historyWriter;
     }
 
     public async Task<Result> Handle(UpdateDocumentCommand request, CancellationToken cancellationToken)
@@ -45,6 +47,10 @@ public class UpdateDocumentCommandHandler : IRequestHandler<UpdateDocumentComman
         document.Status = request.Status;
 
         _dataProvider.Update(document);
+
+        await _historyWriter.CreateSnapshotAsync(document, DocumentHistoryChangeType.Updated, Guid.Empty,
+            cancellationToken);
+        
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
