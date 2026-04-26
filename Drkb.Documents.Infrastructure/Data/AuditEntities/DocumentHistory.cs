@@ -17,5 +17,5 @@ public class DocumentHistory
     public Guid ChangedByUserId { get; set; }
     public DateTime ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
-    public List<DocumentTag> DocumentTags { get; set; }
+    public List<DocumentTagHistory> DocumentTagsHistories { get; set; }
 }
