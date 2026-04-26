@@ -28,7 +28,6 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, Result>
             Title = request.Title.Trim(),
             IsDeleted = false,
             DeletedAt = null,
-            DocumentTags = new List<Domain.Entity.DocumentTag>()
         };
 
         await _dataProvider.AddAsync(tag, cancellationToken);

@@ -23,6 +23,7 @@ public class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, Result>
         }
 
         var tag = await _dataProvider.GetByIdAsync(request.Id, cancellationToken);
+        
         if (tag is null || tag.IsDeleted)
         {
             return Result.BadRequest("NOT_FOUND", "Tag not found");

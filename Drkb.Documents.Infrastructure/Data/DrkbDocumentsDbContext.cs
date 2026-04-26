@@ -17,13 +17,15 @@ public class DrkbDocumentsDbContext : DbContext
     public DbSet<DocumentTag> DocumentTags { get; set; }
     
     public DbSet<DocumentHistory> DocumentHistories { get; set; }
-
+    public DbSet<DocumentTagHistory> DocumentTagHistories { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<DocumentHistory>()
             .ToTable("document_history", "audit");
+        modelBuilder.Entity<DocumentTagHistory>()
+            .ToTable("document_tag_history", "audit");
         
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(InfrastructureAssemblyMarker).Assembly);
     }
