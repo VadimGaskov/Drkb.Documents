@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Architecture Guide For AI Agents (универсально для всех проектов)
 
 Этот документ описывает **единый архитектурный стиль**, используемый во всех проектах: слои, зависимости, CQRS через `MediatR`, `QueryObject`/`DataProvider`, `Result`, DI и фоновые задачи.
@@ -219,3 +223,9 @@ DI-регистрация: `Infrastructure/DI/QueryObjectServiceCollectionExtens
   - `IObjectStorageService` -> `S3ObjectStorageService`
   - `IUploadContextService` -> `RedisUploadContextService`
 - **Result**: используется пакет `Drkb.ResultObjects`.
+
+
+# Правила работы при сборке проекта с нуля: 
+
+1) Сущности бд создаются через { get; set; } а не => Set<Document>();
+2) Контекст БД называется как Drkb{имя_проекта}

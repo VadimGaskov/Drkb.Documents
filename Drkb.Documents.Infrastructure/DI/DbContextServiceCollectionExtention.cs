@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Drkb.Documents.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,11 +10,12 @@ public static class DbContextServiceCollectionExtention
     public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
-        //TODO прописать DBContext
-        /*services.AddDbContext<DrkbNewsDbContext>(options =>
+
+        services.AddDbContext<DrkbDocumentsDbContext>(options =>
         {
-            options.UseNpgsql(connectionString, x => x.MigrationsAssembly("drkb-news.Infrastructure"));
-        });*/
+            options.UseNpgsql(connectionString, 
+                x => x.MigrationsAssembly(typeof(DrkbDocumentsDbContext).Assembly.GetName().Name));
+        });
 
         return services;
     }

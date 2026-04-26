@@ -30,4 +30,8 @@
       <ProjectReference Include="..\Drkb.Documents.Domain\Drkb.Documents.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Configurations\" />
+    </ItemGroup>
+
 </Project>
