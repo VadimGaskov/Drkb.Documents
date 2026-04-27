@@ -36,6 +36,11 @@ public class GetAllCategoriesWithChildren : IGetAllCategoriesWithChildren
                     CreatedBy = y.CreatedBy,
                     Description = y.Description,
                     Status = y.Status,
+                    Tags = y.DocumentTags.Select(t => new TagDto()
+                    {
+                        Id = t.Tag.Id, 
+                        Title = t.Tag.Title
+                    }).ToList()
                 }).ToList()
             })
             .ToListAsync(cancellationToken);

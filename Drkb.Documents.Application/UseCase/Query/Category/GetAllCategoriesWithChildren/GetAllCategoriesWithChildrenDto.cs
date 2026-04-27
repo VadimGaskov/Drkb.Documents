@@ -7,9 +7,8 @@ namespace Drkb.Documents.Application.UseCase.Query.Category.GetAllCategoriesWith
 public record GetAllCategoriesWithChildrenDto : BaseDto
 {
     public string Title { get; set; }
-    public List<DocumentDto> Documents { get; set; }
+    public List<DocumentDto> Documents { get; set; } = new();
     public Guid? ParentCategoryId { get; set; }
-    public GetAllCategoriesWithChildrenDto? ParentCategory { get; set; }
     public List<GetAllCategoriesWithChildrenDto> Children { get; set; } = new();
 }
 
@@ -20,4 +19,11 @@ public record DocumentDto : BaseDto
     public DocumentStatus Status { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
+    public List<TagDto> Tags { get; set; } = new(); // ✅ сразу теги, без промежуточного DocumentTagDto
+}
+
+public record TagDto : BaseDto
+{
+    public string Title { get; set; }
+    
 }

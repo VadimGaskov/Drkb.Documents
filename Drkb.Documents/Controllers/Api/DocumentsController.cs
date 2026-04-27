@@ -1,3 +1,4 @@
+using Drkb.Documents.Application.UseCase.Command.Document.AssignTags;
 using Drkb.Documents.Application.UseCase.Command.Document.Create;
 using Drkb.Documents.Application.UseCase.Command.Document.Delete;
 using Drkb.Documents.Application.UseCase.Command.Document.Update;
@@ -29,6 +30,19 @@ public class DocumentsController : ControllerBase
         return StatusCode(result.StatusCode, result.ErrorMessage);
     }
 
+    [HttpPut("{doocumentId:guid}/tags")]
+    public async Task<IActionResult> AssignTags(Guid documentId, [FromBody] AssignTagsCommand command, CancellationToken cancellationToken)
+    {
+        if (documentId != command.DocumentId)
+            return BadRequest();
+
+        var result = await _mediator.Send(command, cancellationToken);
+        if (result.IsSuccess)
+            return Ok();
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id,[FromBody] UpdateDocumentCommand command, CancellationToken cancellationToken)
     {
