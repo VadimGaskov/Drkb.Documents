@@ -1,5 +1,5 @@
 using Drkb.Documents.Application.Interfaces.DataProvider;
-using DrkbTaskManager.Domain.ResultObject;
+using Drkb.ResultObjects;
 using MediatR;
 
 namespace Drkb.Documents.Application.UseCase.Command.Tag.Create;
@@ -19,7 +19,7 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, Result>
     {
         if (string.IsNullOrWhiteSpace(request.Title))
         {
-            return Result.BadRequest("VALIDATION_ERROR", "Tag title is required");
+            return Result.BadRequest("VALIDATION_ERROR Tag title is required");
         }
 
         var tag = new Domain.Entity.Tag

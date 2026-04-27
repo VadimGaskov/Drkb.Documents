@@ -3,7 +3,7 @@ using Drkb.Documents.Application.Interfaces.Audit.Document;
 using Drkb.Documents.Application.Interfaces.Authorization;
 using Drkb.Documents.Application.Interfaces.DataProvider;
 using Drkb.Documents.Domain.Enum;
-using DrkbTaskManager.Domain.ResultObject;
+using Drkb.ResultObjects;
 using MediatR;
 
 namespace Drkb.Documents.Application.UseCase.Command.Document.Create;
@@ -29,12 +29,12 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
     {
         if (string.IsNullOrWhiteSpace(request.Title))
         {
-            return Result.BadRequest("VALIDATION_ERROR", "Document title is required");
+            return Result.BadRequest("VALIDATION_ERROR Document title is required");
         }
 
         if (request.CategoryId == Guid.Empty)
         {
-            return Result.BadRequest("VALIDATION_ERROR", "Category id is required");
+            return Result.BadRequest("VALIDATION_ERROR Category id is required");
         }
 
         var document = new Domain.Entity.Document

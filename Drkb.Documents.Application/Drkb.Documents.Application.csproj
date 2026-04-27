@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Drkb.ResultObjects" Version="1.0.2" />
       <PackageReference Include="MediatR" Version="12.5.0" />
-      <PackageReference Include="ResultObject" Version="1.0.1" />
     </ItemGroup>
 
     <ItemGroup>

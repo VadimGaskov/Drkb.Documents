@@ -1,5 +1,5 @@
 using Drkb.Documents.Application.Interfaces.DataProvider;
-using DrkbTaskManager.Domain.ResultObject;
+using Drkb.ResultObjects;
 using MediatR;
 
 namespace Drkb.Documents.Application.UseCase.Command.Category.Delete;
@@ -19,13 +19,13 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
     {
         if (request.Id == Guid.Empty)
         {
-            return Result.BadRequest("VALIDATION_ERROR", "Category id is required");
+            return Result.BadRequest("VALIDATION_ERROR Category id is required");
         }
 
         var category = await _dataProvider.GetByIdAsync(request.Id, cancellationToken);
         if (category is null || category.IsDeleted)
         {
-            return Result.BadRequest("NOT_FOUND", "Category not found");
+            return Result.BadRequest("NOT_FOUND Category not found");
         }
 
         category.IsDeleted = true;
