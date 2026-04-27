@@ -1,6 +1,7 @@
 using Drkb.Documents.Application.UseCase.Command.Category.Create;
 using Drkb.Documents.Application.UseCase.Command.Category.Delete;
 using Drkb.Documents.Application.UseCase.Command.Category.Update;
+using Drkb.Documents.Application.UseCase.Query.Category.GetAllCategoriesWithChildren;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,18 @@ public class CategoriesController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpGet()]
+    public async Task<ActionResult<List<GetAllCategoriesWithChildrenDto>>> GetAllWithChildren(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetAllCategoriesWithChildrenQuery(), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok(result.Data);
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCategoryCommand command, CancellationToken cancellationToken)
     {
