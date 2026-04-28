@@ -30,7 +30,7 @@ public class DocumentsController : ControllerBase
         return StatusCode(result.StatusCode, result.ErrorMessage);
     }
 
-    [HttpPut("{doocumentId:guid}/tags")]
+    [HttpPut("{documentId:guid}/tags")]
     public async Task<IActionResult> AssignTags(Guid documentId, [FromBody] AssignTagsCommand command, CancellationToken cancellationToken)
     {
         if (documentId != command.DocumentId)
