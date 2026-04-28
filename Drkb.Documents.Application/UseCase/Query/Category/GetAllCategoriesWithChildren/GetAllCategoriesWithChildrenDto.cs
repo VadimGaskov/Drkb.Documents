@@ -7,7 +7,6 @@ namespace Drkb.Documents.Application.UseCase.Query.Category.GetAllCategoriesWith
 public record GetAllCategoriesWithChildrenDto : BaseDto
 {
     public string Title { get; set; }
-    public List<DocumentDto> Documents { get; set; } = new();
     public Guid? ParentCategoryId { get; set; }
     public List<GetAllCategoriesWithChildrenDto> Children { get; set; } = new();
 }

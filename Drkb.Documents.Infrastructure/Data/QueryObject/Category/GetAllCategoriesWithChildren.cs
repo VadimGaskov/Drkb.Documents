@@ -25,23 +25,6 @@ public class GetAllCategoriesWithChildren : IGetAllCategoriesWithChildren
                 Id = x.Id,
                 Title = x.Title,
                 ParentCategoryId = x.ParentCategoryId,
-                
-                Documents = x.Documents
-                    .Where(y=> y.Status != DocumentStatus.Deleted)
-                    .Select(y=> new DocumentDto()
-                {
-                    Id = y.Id,
-                    Title = y.Title,
-                    CreatedAt = y.CreatedAt,
-                    CreatedBy = y.CreatedBy,
-                    Description = y.Description,
-                    Status = y.Status,
-                    Tags = y.DocumentTags.Select(t => new TagDto()
-                    {
-                        Id = t.Tag.Id, 
-                        Title = t.Tag.Title
-                    }).ToList()
-                }).ToList()
             })
             .ToListAsync(cancellationToken);
 

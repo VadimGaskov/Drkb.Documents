@@ -1,5 +1,6 @@
 using Drkb.Documents.Application.UseCase.Command.Category.Create;
 using Drkb.Documents.Domain.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Drkb.Documents.Infrastructure.Data.DataProvider.Category;
 
@@ -17,13 +18,13 @@ public class CreateCategoryDataProvider : ICreateCategoryDataProvider
         await _context.Categories.AddAsync(category);
     }
 
-    public Task<List<Domain.Entity.Tag>> GetTagsAsync(List<Guid> tagIds, CancellationToken cancellationToken)
+    public async Task<List<Domain.Entity.Tag>> GetTagsAsync(List<Guid> tagIds, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _context.Tags.Where(x => tagIds.Contains(x.Id)).ToListAsync(cancellationToken);
     }
 
-    public Task AddCategoryTagAsync(CategoryTag categoryTag, CancellationToken cancellationToken)
+    public async Task AddCategoryTagAsync(CategoryTag categoryTag, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await _context.CategoryTags.AddAsync(categoryTag,cancellationToken);
     }
 }
