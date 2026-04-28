@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Drkb.Documents.Application.UseCase.Command.Document.Create;
 
-public record CreateDocumentCommand(string Title, string? Description, Guid CategoryId) : IRequest<Result>;
+public record CreateDocumentCommand(string Title, string? Description, Guid CategoryId, List<Guid> TagIds) : IRequest<Result>;
