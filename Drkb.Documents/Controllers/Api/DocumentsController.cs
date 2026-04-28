@@ -2,7 +2,9 @@ using Drkb.Documents.Application.UseCase.Command.Document.AddToFavorite;
 using Drkb.Documents.Application.UseCase.Command.Document.AssignTags;
 using Drkb.Documents.Application.UseCase.Command.Document.Create;
 using Drkb.Documents.Application.UseCase.Command.Document.Delete;
+using Drkb.Documents.Application.UseCase.Command.Document.RemoveFromFavorite;
 using Drkb.Documents.Application.UseCase.Command.Document.Update;
+using Drkb.Documents.Application.UseCase.Query.Document.GetAllByUserDocuments;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +28,30 @@ public class DocumentsController : ControllerBase
         if (result.IsSuccess)
         {
             return Ok();
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
+    [HttpDelete("{documentId:guid}/favorite")]
+    public async Task<IActionResult> RemoveFromFavorite(Guid documentId, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new RemoveFromFavoriteCommand(documentId), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
+    [HttpGet("favorite")]
+    public async Task<ActionResult<List<GetFavoriteDocumentsDto>>> GetMyDocuments(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetFavoriteDocumentsQuery(), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok(result.Data);
         }
 
         return StatusCode(result.StatusCode, result.ErrorMessage);
