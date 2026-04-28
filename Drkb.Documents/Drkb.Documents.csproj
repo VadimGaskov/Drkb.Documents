@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>Drkb.Documents</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
+        
     </PropertyGroup>
 
     <ItemGroup>

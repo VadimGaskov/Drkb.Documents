@@ -1,4 +1,5 @@
 using Drkb.Documents.Application.UseCase.Command.Category.Update;
+using Drkb.Documents.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Drkb.Documents.Infrastructure.Data.DataProvider.Category;
@@ -12,13 +13,28 @@ public class UpdateCategoryDataProvider : IUpdateCategoryDataProvider
         _context = context;
     }
 
-    public void Update(Domain.Entity.Category entity)
+    public void Update(Domain.Entity.Category category)
     {
-        _context.Categories.Update(entity);
+        _context.Categories.Update(category);
     }
 
-    public async Task<Domain.Entity.Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Domain.Entity.Category?> GetCategoryWithTagsByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _context.Categories.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        return await _context.Categories.Include(x=>x.CategoryTags).FirstOrDefaultAsync(x=>x.Id == id, cancellationToken);
+    }
+
+    public async Task<List<Domain.Entity.Tag>> GetTagsAsync(List<Guid> tagIds, CancellationToken cancellationToken)
+    {
+        return await _context.Tags.Where(x=> tagIds.Contains(x.Id)).ToListAsync(cancellationToken);
+    }
+
+    public void RemoveCategoryTag(CategoryTag categoryTag)
+    {
+        _context.CategoryTags.Remove(categoryTag);
+    }
+
+    public async Task AddCategoryTagAsync(CategoryTag categoryTag, CancellationToken cancellationToken)
+    {
+        await _context.CategoryTags.AddAsync(categoryTag, cancellationToken);
     }
 }

@@ -19,7 +19,6 @@
 
     <ItemGroup>
       <Folder Include="UseCase\Command\" />
-      <Folder Include="UseCase\Query\" />
     </ItemGroup>
 
 </Project>

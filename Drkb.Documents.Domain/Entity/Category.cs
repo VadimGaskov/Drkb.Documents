@@ -9,6 +9,7 @@ public class Category : BaseEntity
     public List<Document> Documents { get; set; }
     public Guid? ParentCategoryId { get; set; }
     public Category? ParentCategory { get; set; }
-    public List<Category> Children { get; set; }
-    public List<CategoryAccessRule> AccessRules { get; set; } 
+    public List<Category> Children { get; set; } = new();
+    public List<CategoryAccessRule> AccessRules { get; set; } = new();
+    public List<CategoryTag> CategoryTags { get; set; } = new();
 }

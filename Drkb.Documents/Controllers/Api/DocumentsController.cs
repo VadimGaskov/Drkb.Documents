@@ -1,6 +1,10 @@
+using Drkb.Documents.Application.UseCase.Command.Document.AddToFavorite;
+using Drkb.Documents.Application.UseCase.Command.Document.AssignTags;
 using Drkb.Documents.Application.UseCase.Command.Document.Create;
 using Drkb.Documents.Application.UseCase.Command.Document.Delete;
+using Drkb.Documents.Application.UseCase.Command.Document.RemoveFromFavorite;
 using Drkb.Documents.Application.UseCase.Command.Document.Update;
+using Drkb.Documents.Application.UseCase.Query.Document.GetFavoriteDocuments;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +21,42 @@ public class DocumentsController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpPost("{documentId:guid}/favorite")]
+    public async Task<IActionResult> AddToFavorite(Guid documentId, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new AddToFavoriteCommand(documentId), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
+    [HttpDelete("{documentId:guid}/favorite")]
+    public async Task<IActionResult> RemoveFromFavorite(Guid documentId, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new RemoveFromFavoriteCommand(documentId), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
+    [HttpGet("favorite")]
+    public async Task<ActionResult<List<GetFavoriteDocumentsDto>>> GetFavoriteDocuments(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetFavoriteDocumentsQuery(), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok(result.Data);
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateDocumentCommand command, CancellationToken cancellationToken)
     {
@@ -29,6 +69,19 @@ public class DocumentsController : ControllerBase
         return StatusCode(result.StatusCode, result.ErrorMessage);
     }
 
+    [HttpPut("{documentId:guid}/tags")]
+    public async Task<IActionResult> AssignTags(Guid documentId, [FromBody] AssignTagsCommand command, CancellationToken cancellationToken)
+    {
+        if (documentId != command.DocumentId)
+            return BadRequest();
+
+        var result = await _mediator.Send(command, cancellationToken);
+        if (result.IsSuccess)
+            return Ok();
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id,[FromBody] UpdateDocumentCommand command, CancellationToken cancellationToken)
     {

@@ -27,6 +27,7 @@ try
     builder.Services.AddBehavior();
     builder.Services.AddMediatr();
     builder.Services.AddDataProviderServices();
+    builder.Services.AddQueryObjects();
     builder.Services.AddSwagger();
 
     builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();

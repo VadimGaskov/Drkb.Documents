@@ -12,13 +12,21 @@ public class DrkbDocumentsDbContext : DbContext
     }
 
     public DbSet<Category> Categories { get; set; }
+    public DbSet<CategoryAccessRule> CategoryAccessRules { get; set; }
+    public DbSet<CategoryTag> CategoryTags { get; set; }
     public DbSet<Document> Documents { get; set; }
-    public DbSet<Tag> Tags { get; set; }
+    public DbSet<DocumentAccessRule> DocumentAccessRules { get; set; }
+    public DbSet <DocumentDepartmentAccess> DocumentDepartmentAccesses { get; set; }
     public DbSet<DocumentTag> DocumentTags { get; set; }
+    public DbSet<DocumentUserAccess> DocumentUserAccesses { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<UserFavoriteDocument> UserFavoriteDocuments { get; set; }
+    
+    
     
     public DbSet<DocumentHistory> DocumentHistories { get; set; }
     public DbSet<DocumentTagHistory> DocumentTagHistories { get; set; }
-    public DbSet<DocumentAccessRule> DocumentAccessRules { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
