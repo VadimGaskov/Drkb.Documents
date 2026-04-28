@@ -1,3 +1,4 @@
+using Drkb.Documents.Application.UseCase.Command.Document.AddToFavorite;
 using Drkb.Documents.Application.UseCase.Command.Document.AssignTags;
 using Drkb.Documents.Application.UseCase.Command.Document.Create;
 using Drkb.Documents.Application.UseCase.Command.Document.Delete;
@@ -18,6 +19,18 @@ public class DocumentsController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpPost("{documentId:guid}/favorite")]
+    public async Task<IActionResult> AddToFavorite(Guid documentId, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new AddToFavoriteCommand(documentId), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateDocumentCommand command, CancellationToken cancellationToken)
     {
