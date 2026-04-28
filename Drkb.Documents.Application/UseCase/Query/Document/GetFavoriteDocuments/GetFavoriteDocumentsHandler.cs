@@ -1,13 +1,13 @@
 using Drkb.ResultObjects;
 using MediatR;
 
-namespace Drkb.Documents.Application.UseCase.Query.Document.GetAllByUserDocuments;
+namespace Drkb.Documents.Application.UseCase.Query.Document.GetFavoriteDocuments;
 
 public class GetFavoriteDocumentsHandler : IRequestHandler<GetFavoriteDocumentsQuery, Result<List<GetFavoriteDocumentsDto>>>
 {
-    private readonly GetFavoriteDocuments _getFavoriteDocuments;
+    private readonly IGetFavoriteDocuments _getFavoriteDocuments;
 
-    public GetFavoriteDocumentsHandler(GetFavoriteDocuments getFavoriteDocuments)
+    public GetFavoriteDocumentsHandler(IGetFavoriteDocuments getFavoriteDocuments)
     {
         _getFavoriteDocuments = getFavoriteDocuments;
     }

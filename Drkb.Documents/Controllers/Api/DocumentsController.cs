@@ -4,7 +4,7 @@ using Drkb.Documents.Application.UseCase.Command.Document.Create;
 using Drkb.Documents.Application.UseCase.Command.Document.Delete;
 using Drkb.Documents.Application.UseCase.Command.Document.RemoveFromFavorite;
 using Drkb.Documents.Application.UseCase.Command.Document.Update;
-using Drkb.Documents.Application.UseCase.Query.Document.GetAllByUserDocuments;
+using Drkb.Documents.Application.UseCase.Query.Document.GetFavoriteDocuments;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,7 +46,7 @@ public class DocumentsController : ControllerBase
     }
 
     [HttpGet("favorite")]
-    public async Task<ActionResult<List<GetFavoriteDocumentsDto>>> GetMyDocuments(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<GetFavoriteDocumentsDto>>> GetFavoriteDocuments(CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetFavoriteDocumentsQuery(), cancellationToken);
         if (result.IsSuccess)
