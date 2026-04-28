@@ -18,7 +18,12 @@ public class CategoriesController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet()]
+    /// <summary>
+    /// Возвращает список категорий, доступных пользователю, вместе с дочерними категориями.
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Список категорий с иерархией дочерних категорий доступных пользователю.</returns>
+    [HttpGet]
     public async Task<ActionResult<List<GetAllCategoriesWithChildrenDto>>> GetAllWithChildren(CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetAllCategoriesWithChildrenQuery(), cancellationToken);

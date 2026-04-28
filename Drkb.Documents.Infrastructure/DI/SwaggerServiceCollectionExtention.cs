@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 namespace Drkb.Documents.Infrastructure.DI;
@@ -9,7 +10,7 @@ public static class SwaggerServiceCollectionExtention
     {
         services.AddSwaggerGen(options =>
         {
-
+            
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "Drkb.Documents", Version = "v1" });
 
             OpenApiSecurityScheme securityDefinition = new OpenApiSecurityScheme()
