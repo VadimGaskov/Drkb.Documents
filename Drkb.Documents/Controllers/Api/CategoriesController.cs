@@ -2,6 +2,7 @@ using Drkb.Documents.Application.UseCase.Command.Category.Create;
 using Drkb.Documents.Application.UseCase.Command.Category.Delete;
 using Drkb.Documents.Application.UseCase.Command.Category.Update;
 using Drkb.Documents.Application.UseCase.Query.Category.GetAllCategoriesWithChildren;
+using Drkb.Documents.Application.UseCase.Query.Category.GetCategoryWithChildrenById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,10 +24,10 @@ public class CategoriesController : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Список категорий с иерархией дочерних категорий доступных пользователю.</returns>
-    [HttpGet]
-    public async Task<ActionResult<List<GetAllCategoriesWithChildrenDto>>> GetAllWithChildren(CancellationToken cancellationToken)
+    [HttpGet("tree")]
+    public async Task<ActionResult<List<GetCategoriesTreeDto>>> GetCategoriesTree(CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetAllCategoriesWithChildrenQuery(), cancellationToken);
+        var result = await _mediator.Send(new GetCategoriesTreeQuery(), cancellationToken);
         if (result.IsSuccess)
         {
             return Ok(result.Data);
@@ -36,9 +37,9 @@ public class CategoriesController : ControllerBase
     }
     
     [HttpGet("{categoryId:guid}")]
-    public async Task<ActionResult<List<GetAllCategoriesWithChildrenDto>>> GetById(Guid categoryId, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetCategoryDetailsDto>> GetCategoryDetails(Guid categoryId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetAllCategoriesWithChildrenQuery(), cancellationToken);
+        var result = await _mediator.Send(new GetCategoryDetailsQuery(categoryId), cancellationToken);
         if (result.IsSuccess)
         {
             return Ok(result.Data);

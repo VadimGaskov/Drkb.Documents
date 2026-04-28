@@ -2,7 +2,7 @@
 
 namespace Drkb.Documents.Application.UseCase.Query.Category.GetAllCategoriesWithChildren;
 
-public interface IGetAllCategoriesWithChildren : IQueryMarker, IQueryObject<GetAllCategoriesWithChildrenQuery, List<GetAllCategoriesWithChildrenDto>>
+public interface IGetCategoriesTree : IQueryMarker, IQueryObject<GetCategoriesTreeQuery, List<GetCategoriesTreeDto>>
 {
     
 }

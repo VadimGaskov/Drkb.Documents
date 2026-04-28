@@ -5,22 +5,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Drkb.Documents.Infrastructure.Data.QueryObject.Category;
 
-public class GetAllCategoriesWithChildren : IGetAllCategoriesWithChildren
+public class GetCategoriesTree : IGetCategoriesTree
 {
     private readonly DrkbDocumentsDbContext _context;
 
-    public GetAllCategoriesWithChildren(DrkbDocumentsDbContext context)
+    public GetCategoriesTree(DrkbDocumentsDbContext context)
     {
         _context = context;
     }
 
-    public async Task<List<GetAllCategoriesWithChildrenDto>> ExecuteAsync(GetAllCategoriesWithChildrenQuery query, CancellationToken cancellationToken = default)
+    public async Task<List<GetCategoriesTreeDto>> ExecuteAsync(GetCategoriesTreeQuery query, CancellationToken cancellationToken = default)
     {
         // 1. Один запрос — все категории
         var allCategories = await _context.Categories
             .AsNoTracking()
             .Where(x=>x.IsDeleted == false)
-            .Select(x=> new GetAllCategoriesWithChildrenDto()
+            .Select(x=> new GetCategoriesTreeDto()
             {
                 Id = x.Id,
                 Title = x.Title,
@@ -30,7 +30,7 @@ public class GetAllCategoriesWithChildren : IGetAllCategoriesWithChildren
 
         var lookup = allCategories.ToDictionary(x => x.Id);
 
-        var roots = new List<GetAllCategoriesWithChildrenDto>();
+        var roots = new List<GetCategoriesTreeDto>();
         
         foreach (var category in allCategories)
         {
