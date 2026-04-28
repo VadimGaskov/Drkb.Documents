@@ -25,36 +25,17 @@ public class GetCategoryDetails : IGetCategoryDetails
                 ParentCategoryId = x.ParentCategoryId,
                 Tags = x.CategoryTags
                     .Where(ct => !ct.Tag.IsDeleted)
-                    .Select(ct => new GetCategoryWithChildrenByIdTagDto
+                    .Select(ct => new GetCategoryDetailsDtoTagDto
                     {
                         Id = ct.TagId,
                         Title = ct.Tag.Title
                     })
                     .ToList(),
-                Documents = x.Documents
-                    .Where(d => d.Status != DocumentStatus.Deleted)
-                    .Select(d => new GetCategoryWithChildrenByIdDocumentDto
-                    {
-                        Id = d.Id,
-                        Title = d.Title,
-                        Description = d.Description,
-                        Status = d.Status,
-                        CreatedBy = d.CreatedBy,
-                        CreatedAt = d.CreatedAt,
-                        Tags = d.DocumentTags
-                            .Where(dt => !dt.Tag.IsDeleted)
-                            .Select(dt => new GetCategoryWithChildrenByIdTagDto
-                            {
-                                Id = dt.TagId,
-                                Title = dt.Tag.Title
-                            })
-                            .ToList()
-                    })
-                    .ToList()
             })
             .ToListAsync(cancellationToken);
 
         var lookup = allCategories.ToDictionary(x => x.Id);
+        
         foreach (var category in allCategories)
         {
             if (category.ParentCategoryId is Guid parentId && lookup.TryGetValue(parentId, out var parent))
