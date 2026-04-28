@@ -1,4 +1,5 @@
 using Drkb.Documents.Application.Interfaces.DataProvider;
+using Drkb.Documents.Domain.Entity;
 using Drkb.ResultObjects;
 using MediatR;
 
@@ -22,6 +23,13 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
             return Result.BadRequest("VALIDATION_ERROR Category title is required");
         }
 
+        var tagsToAdd = await _dataProvider.GetTagsAsync(request.TagIds, cancellationToken);
+
+        if (tagsToAdd.Count != request.TagIds.Count)
+        {
+            return Result.BadRequest("VALIDATION_ERROR Tag IDs are invalid");
+        }
+        
         var category = new Domain.Entity.Category
         {
             Id = Guid.NewGuid(),
@@ -31,7 +39,20 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
             ParentCategoryId = request.ParentCategoryId
         };
 
-        await _dataProvider.AddAsync(category, cancellationToken);
+        await _dataProvider.AddCategoryAsync(category);
+
+        foreach (var tag in tagsToAdd)
+        {
+            await _dataProvider.AddCategoryTagAsync(new CategoryTag()
+            {
+                Id = Guid.NewGuid(),
+                Category = category,
+                CategoryId = category.Id,
+                Tag = tag,
+                TagId = tag.Id
+            }, cancellationToken);
+        }
+        
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
