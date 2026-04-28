@@ -3,6 +3,7 @@ using Drkb.Documents.Application.UseCase.Command.Category.Delete;
 using Drkb.Documents.Application.UseCase.Command.Category.Update;
 using Drkb.Documents.Application.UseCase.Query.Category.GetAllCategoriesWithChildren;
 using Drkb.Documents.Application.UseCase.Query.Category.GetCategoryWithChildrenById;
+using Drkb.Documents.Application.UseCase.Query.Category.GetDocumentsByCategoryId;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,6 +41,20 @@ public class CategoriesController : ControllerBase
     public async Task<ActionResult<GetCategoryDetailsDto>> GetCategoryDetails(Guid categoryId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetCategoryDetailsQuery(categoryId), cancellationToken);
+        if (result.IsSuccess)
+        {
+            return Ok(result.Data);
+        }
+
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
+    [HttpGet("{categoryId:guid}/documents")]
+    public async Task<ActionResult<List<GetDocumentsByCategoryIdDto>>> GetDocumentsByCategoryId(
+        Guid categoryId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetDocumentsByCategoryIdQuery(categoryId), cancellationToken);
         if (result.IsSuccess)
         {
             return Ok(result.Data);
