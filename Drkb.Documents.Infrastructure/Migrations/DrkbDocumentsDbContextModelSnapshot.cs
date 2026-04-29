@@ -45,7 +45,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.CategoryAccessRule", b =>
@@ -70,7 +70,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryAccessRules");
+                    b.ToTable("CategoryAccessRules", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.CategoryTag", b =>
@@ -91,7 +91,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("CategoryTags");
+                    b.ToTable("CategoryTags", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.Document", b =>
@@ -126,7 +126,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Documents");
+                    b.ToTable("Documents", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.DocumentAccessRule", b =>
@@ -151,7 +151,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("DocumentAccessRules");
+                    b.ToTable("DocumentAccessRules", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.DocumentDepartmentAccess", b =>
@@ -170,7 +170,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("DocumentDepartmentAccesses");
+                    b.ToTable("DocumentDepartmentAccesses", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.DocumentTag", b =>
@@ -191,7 +191,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("DocumentTags");
+                    b.ToTable("DocumentTags", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.DocumentUserAccess", b =>
@@ -210,7 +210,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("DocumentUserAccesses");
+                    b.ToTable("DocumentUserAccesses", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.Tag", b =>
@@ -234,7 +234,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.UserFavoriteDocument", b =>
@@ -256,7 +256,7 @@ namespace Drkb.Documents.Infrastructure.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("UserFavoriteDocuments");
+                    b.ToTable("UserFavoriteDocuments", (string)null);
                 });
 
             modelBuilder.Entity("Drkb.Documents.Infrastructure.Data.AuditEntities.DocumentHistory", b =>

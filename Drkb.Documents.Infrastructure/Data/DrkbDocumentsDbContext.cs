@@ -12,7 +12,9 @@ public class DrkbDocumentsDbContext : DbContext
     }
 
     public DbSet<Category> Categories { get; set; }
-    public DbSet<CategoryAccessRule> CategoryAccessRules { get; set; }
+    public DbSet<CategoryDepartmentAccess> CategoryDepartmentAccesses { get; set; }
+    public DbSet<CategoryRoleAccess> CategoryRoleAccesses { get; set; }
+    public DbSet<CategoryUserAccess> CategoryUserAccesses { get; set; }
     public DbSet<CategoryTag> CategoryTags { get; set; }
     public DbSet<Document> Documents { get; set; }
     public DbSet<DocumentAccessRule> DocumentAccessRules { get; set; }
