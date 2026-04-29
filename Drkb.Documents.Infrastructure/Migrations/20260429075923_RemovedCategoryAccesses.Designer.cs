@@ -3,6 +3,7 @@ using System;
 using Drkb.Documents.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Drkb.Documents.Infrastructure.Migrations
 {
     [DbContext(typeof(DrkbDocumentsDbContext))]
-    partial class DrkbDocumentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260429075923_RemovedCategoryAccesses")]
+    partial class RemovedCategoryAccesses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,6 +126,25 @@ namespace Drkb.Documents.Infrastructure.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("DocumentTags");
+                });
+
+            modelBuilder.Entity("Drkb.Documents.Domain.Entity.DocumentUserAccess", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.ToTable("DocumentUserAccesses");
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.Tag", b =>
@@ -302,6 +324,17 @@ namespace Drkb.Documents.Infrastructure.Migrations
                     b.Navigation("Document");
 
                     b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("Drkb.Documents.Domain.Entity.DocumentUserAccess", b =>
+                {
+                    b.HasOne("Drkb.Documents.Domain.Entity.Document", "Document")
+                        .WithMany()
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("Drkb.Documents.Domain.Entity.UserFavoriteDocument", b =>

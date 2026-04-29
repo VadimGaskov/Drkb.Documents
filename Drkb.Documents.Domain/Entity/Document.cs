@@ -15,6 +15,5 @@ public class Document : BaseEntity
     public DateTime CreatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
     public List<DocumentTag> DocumentTags { get; set; } = new List<DocumentTag>();
-    public List<DocumentAccessRule> AccessRules { get; set; } = new List<DocumentAccessRule>();
     public List<UserFavoriteDocument> UserFavoriteDocuments { get; set; } = new List<UserFavoriteDocument>();
 }

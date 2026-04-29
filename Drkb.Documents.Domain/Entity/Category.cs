@@ -11,9 +11,5 @@ public class Category : BaseEntity
     public Category? ParentCategory { get; set; }
     public List<Category> Children { get; set; } = new();
     
-    public List<CategoryUserAccess> UserAccesses { get; set; } = new();
-    public List<CategoryDepartmentAccess> DepartmentAccesses { get; set; } = new();
-    public List<CategoryRoleAccess> RoleAccesses { get; set; } = new();
-    
     public List<CategoryTag> CategoryTags { get; set; } = new();
 }
