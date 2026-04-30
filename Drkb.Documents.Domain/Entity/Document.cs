@@ -13,7 +13,9 @@ public class Document : BaseEntity
     public DocumentStatus Status { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
+    public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
     public List<DocumentTag> DocumentTags { get; set; } = new List<DocumentTag>();
+    public List<DocumentPermission> Permissions { get; set; } = new();
     public List<UserFavoriteDocument> UserFavoriteDocuments { get; set; } = new List<UserFavoriteDocument>();
 }

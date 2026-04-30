@@ -10,6 +10,7 @@ public class Category : BaseEntity
     public Guid? ParentCategoryId { get; set; }
     public Category? ParentCategory { get; set; }
     public List<Category> Children { get; set; } = new();
+    public List<CategoryPermission> Permissions { get; set; } = new();
     
     public List<CategoryTag> CategoryTags { get; set; } = new();
 }

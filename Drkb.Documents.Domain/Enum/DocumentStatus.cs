@@ -2,7 +2,7 @@
 
 public enum DocumentStatus
 {
+    Draft,
     Published,
-    Archived,
-    Deleted
+    Archived
 }

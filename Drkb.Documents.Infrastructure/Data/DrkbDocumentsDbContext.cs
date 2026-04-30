@@ -18,7 +18,8 @@ public class DrkbDocumentsDbContext : DbContext
     public DbSet<Tag> Tags { get; set; }
     public DbSet<UserFavoriteDocument> UserFavoriteDocuments { get; set; }
     
-    
+    public DbSet<CategoryPermission> CategoryPermissions { get; set; }
+    public DbSet<DocumentPermission> DocumentPermissions { get; set; }
     
     public DbSet<DocumentHistory> DocumentHistories { get; set; }
     public DbSet<DocumentTagHistory> DocumentTagHistories { get; set; }

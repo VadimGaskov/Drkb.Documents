@@ -22,7 +22,7 @@ public class GetFavoriteDocuments : IGetFavoriteDocuments
 
         return await _context.Documents
             .AsNoTracking()
-            .Where(x => x.Status != DocumentStatus.Deleted && x.UserFavoriteDocuments.Any(f => f.UserId == userId))
+            .Where(x => !x.IsDeleted && x.UserFavoriteDocuments.Any(f => f.UserId == userId))
             .Select(x => new GetFavoriteDocumentsDto
             {
                 Id = x.Id,

@@ -24,12 +24,12 @@ public class DeleteDocumentCommandHandler : IRequestHandler<DeleteDocumentComman
         }
 
         var document = await _dataProvider.GetByIdAsync(request.Id, cancellationToken);
-        if (document is null || document.DeletedAt is not null || document.Status == DocumentStatus.Deleted)
+        if (document is null || document.DeletedAt is not null || !document.IsDeleted)
         {
             return Result.BadRequest("NOT_FOUND Document not found");
         }
 
-        document.Status = DocumentStatus.Deleted;
+        document.IsDeleted = true;
         document.DeletedAt = DateTime.UtcNow;
 
         _dataProvider.Update(document);

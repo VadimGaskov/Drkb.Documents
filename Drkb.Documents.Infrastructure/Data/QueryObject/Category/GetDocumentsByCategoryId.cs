@@ -17,7 +17,7 @@ public class GetDocumentsByCategoryId : IGetDocumentsByCategoryId
     {
         return await _context.Documents
             .AsNoTracking()
-            .Where(x => x.CategoryId == query.CategoryId && x.Status != DocumentStatus.Deleted)
+            .Where(x => x.CategoryId == query.CategoryId && !x.IsDeleted)
             .Select(x => new GetDocumentsByCategoryIdDto
             {
                 Id = x.Id,

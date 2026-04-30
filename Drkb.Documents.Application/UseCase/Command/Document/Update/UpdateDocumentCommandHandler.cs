@@ -36,7 +36,7 @@ public class UpdateDocumentCommandHandler : IRequestHandler<UpdateDocumentComman
         }
 
         var document = await _dataProvider.GetByIdAsync(request.Id, cancellationToken);
-        if (document is null || document.DeletedAt is not null || document.Status == DocumentStatus.Deleted)
+        if (document is null || document.DeletedAt is not null || !document.IsDeleted)
         {
             return Result.BadRequest("NOT_FOUND Document not found");
         }
